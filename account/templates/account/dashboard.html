@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <h1>Dashboard</h1>
+    {% with total_images_created=request.user.images_created.count %}
+        <p>У вас в закладках {{ total_images_created }} зображень.</p>
+    {% endwith %}
+
+    <p>Перетягність цю кнопку на ваш toolbar <a href="javascript:{% include 'bookmarklet_launcher.js' %}" class="button">Додати закладку</a> </p>
+    <p>Ви можете <a href="{% url 'edit' %}">змінити параметри</a> вашого аккаунту або <a href="{% url 'password_change' %}">змінити пароль</a>.</p>
+{% endblock %}

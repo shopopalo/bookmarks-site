@@ -1,0 +1,90 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    </head>
+    <body>
+        <div id="header">
+            <span class="logo">Закладки</span>
+            {% if request.user.is_authenticated %}
+                <ul class="menu">
+                    <li {% if section == "dashboard" %}class="selected"{% endif %}>
+                        <a href="{% url 'dashboard' %}">Моя сторінка</a>
+                    </li>
+                    <li {% if section == "images" %}class="selected"{% endif %}>
+                        <a href="#">Зображення</a>
+                    </li>
+                    <li {% if section == "people" %}class="selected"{% endif %}>
+                        <a href="#">Люди</a>
+                    </li>
+                </ul>
+            {% endif %}
+            <span class="user">
+                {% if request.user.is_authenticated %}
+                    qq {{ request.user.first_name }}
+                    <a href="{% url 'logout' %}">Вийти</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Ввійти</a>
+                {% endif %}
+            </span>
+        </div>
+        {% if messages %}
+            <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">
+                    {{ message|safe }}
+                    <a href="#" class="close">X</a>
+                </li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        <div id="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    <script src='{% static "js/jquery-2.1.1.min.js" %}'></script>
+    <script src='{% static "js/jquery.cookie.js" %}'></script>
+    <script>
+        // read csrftoken cookie
+        var csrftoken = $.cookie('csrftoken');
+        // function check whether method is safe
+        function csrfSafeMethod(method) {
+            // these methods don't require CSRF protect
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                // check if the request method is safe and request not cross domain
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+        $(document).ready(function(){
+            {% block domready %}
+                $('a.like').click(function(e) {
+                    e.preventDefault();
+                    $.post('{% url "images:like" %}',{
+                        id: $(this).data('id'),     // id get from data-id
+                        action: $(this).data('action')  // id get from data-action
+                    },
+                    function(data){
+                        if (data['status'] == 'ok') {
+                            var previous_action = $('a.like').data('action');
+                            // toggle data-action
+                            $('a.like').data('action', previous_action == 'like' ? 'unlike' : 'like');
+                            // toggle link text
+                            $('a.like').text(previous_action == 'like' ? 'Unlike' : 'Like');
+                            // update count of likes
+                            var previous_likes = parseInt($('span.count .total').text());
+                            $('span.count .total').text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+                        }
+                    });
+                });
+            {% endblock %}
+        });
+    </script>
+    </body>
+</html>

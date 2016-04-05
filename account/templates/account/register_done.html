@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block title %}Регістрація пройшла успішно{% endblock %}
+
+{% block content %}
+    <h1>qq, {{ new_user.first_name }}</h1>
+    <p>Аккаунт успішно створено. Тепер ви можете <a href="{% url 'login' %}">залогінитися</a>.</p>
+{% endblock %}

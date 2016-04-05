@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Зміна параметрів аккаунту{% endblock %}
+
+{% block content %}
+    <h1>Налаштування</h1>
+    <p>Ви можете змінити параметри аккаунту, які зказані нижче.</p>
+    <form action="." method="POST" enctype="multipart/form-data">
+        {{ user_form.as_p }}
+        {{ profile_form.as_p }}
+        {% csrf_token %}
+        <p><input type="submit" value="Зберегти зміни"></p>
+    </form>
+{% endblock %}
